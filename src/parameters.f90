@@ -36,6 +36,7 @@ module parameters
   logical      :: imprint_vl
   logical      :: stop_imag
   logical      :: real_time
+  ! logical      :: optical_pot
 
   namelist /run_params/ tau, end_time, xr, yr, zr, scheme, eqn_to_solve, &
     bcs, order, restart, saved_restart, multiply_ic_restart, renorm, &
@@ -52,8 +53,11 @@ module parameters
   real (pr) :: nn
   real (pr) :: omx, omy, omz
 
+  ! optical potential params
+  real (pr) :: Upin, waist, zrail
+
   namelist /eqn_params/ Urhs, diss_amp, scal, nv, enerv, g, mu, nn, &
-    omx, omy, omz
+    omx, omy, omz, Upin, waist, zrail
 
   ! io_params
   integer   :: save_rate

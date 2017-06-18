@@ -19,7 +19,7 @@ module ic
 
   private
   public :: get_grid, get_unit_no, ics, fft, get_kc_amp, wall, &
-    sphere, sphere2, vortex_line, Vtrap
+    sphere, sphere2, vortex_line, Vtrap, Vpin
 
   real (pr), dimension(0:nx1), public :: x
   real (pr), dimension(0:ny1), public :: y
@@ -714,16 +714,18 @@ module ic
     use parameters
     implicit none
 
-    real (pr), dimension(0:nx1,js:je,ks:ke) :: Vtrap
+    real (pr), dimension(0:nx1,js:je,ks:ke) :: Vtrap, vp
     real (pr), dimension(3) :: omega
     integer :: i, j, k
 
     omega = (/omx, omy, omz/)
+    vp = Vpin()
     do k=ks,ke
       do j=js,je
         do i=0,nx1
           Vtrap(i,j,k) = 0.5_pr*((omega(1)**2)*x(i)**2 + &
-            (omega(2)**2)*y(j)**2 + (omega(3)**2)*z(k)**2)
+            (omega(2)**2)*y(j)**2 + (omega(3)**2)*z(k)**2) + &
+            vp(i,j,k)
         end do
       end do
     end do
@@ -732,6 +734,25 @@ module ic
 
 ! ***************************************************************************  
 
+  function Vpin()
+    use parameters
+    implicit none
+
+    real (pr), dimension(0:nx1,js:je,ks:ke) :: Vpin
+    integer :: i, j, k
+
+    do k=ks,ke
+      do j=js,je
+        do i=0,nx1
+          Vpin(i,j,k) = Upin*exp(-2.0_pr*(x(i)**2 + y(j)**2)/(waist**2*(1 + (z(k)/zrail)**2))) / &
+                        (1 + (z(k)/zrail)**2)
+        end do
+      end do
+    end do
+
+  end function Vpin
+
+! ***************************************************************************
   subroutine get_r(x0, y0, z0, a1, a2, ll, dir, r)
     ! Get the cylindrical-polar radius r**2=x**2+y**2, y**2+z**2, or z**2+x**2
     use error, only : emergency_stop
